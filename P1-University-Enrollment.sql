@@ -12,34 +12,37 @@
 -- STUDENTS TABLE --
 CREATE TABLE IF NOT EXISTS students (
     id SERIAL PRIMARY KEY,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    email VARCHAR(100),
-    enrollment_date DATE
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    enrollment_date DATE NOT NULL
 );
 
--- PROFESSOR TABLE --
+-- PROFESSORS TABLE --
 CREATE TABLE IF NOT EXISTS professors (
     id SERIAL PRIMARY KEY,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    department VARCHAR(100)
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    department VARCHAR(100) NOT NULL
 );
 
 -- COURSES TABLE --
 CREATE TABLE IF NOT EXISTS courses (
     id SERIAL PRIMARY KEY,
-    course_name VARCHAR(100),
-    course_description TEXT,
-    professor_id INTEGER REFERENCES professors(id)
+    course_name VARCHAR(100) NOT NULL,
+    course_description TEXT NOT NULL,
+    professor_id INTEGER NOT NULL,
+	FOREIGN KEY (professor_id) REFERENCES professors(id)
 );
 
--- ENROLLMENT TABLE --
+-- ENROLLMENTS TABLE --
 CREATE TABLE IF NOT EXISTS enrollments (
-    student_id INTEGER REFERENCES students(id),
-    course_id INTEGER REFERENCES courses(id),
-    enrollment_date DATE,
-    PRIMARY KEY (student_id, course_id)
+    student_id INTEGER NOT NULL,
+    course_id INTEGER NOT NULL,
+    enrollment_date DATE NOT NULL,
+    PRIMARY KEY (student_id, course_id),
+    FOREIGN KEY (student_id) REFERENCES students(id),
+    FOREIGN KEY (course_id) REFERENCES courses(id)
 );
 
 ----------------------------------------
@@ -59,7 +62,7 @@ INSERT INTO students (first_name, last_name, email, enrollment_date) VALUES
 SELECT * FROM students;
 
 
--- INSERT information into the PROFESSOR table
+-- INSERT information into the PROFESSORS table
 INSERT INTO professors (first_name, last_name, department) VALUES
 ('Khan', 'Pewter', 'Computer Science'),
 ('Heisen', 'Burg', 'Chemistry'),
@@ -83,7 +86,7 @@ INSERT INTO courses (course_name, course_description, professor_id) VALUES
 SELECT * FROM courses;
 
 
--- INSERT data into the enrollments table
+-- INSERT data into the ENROLLMENTS table
 -- Student IDs and Course IDs start from 1 and increment by 1(Serial)
 INSERT INTO enrollments (student_id, course_id, enrollment_date) VALUES
 (1, 1, '2024-02-04'),  -- Duke Nukem enrolls in Introduction to Computer Science
@@ -92,7 +95,7 @@ INSERT INTO enrollments (student_id, course_id, enrollment_date) VALUES
 (3, 3, '2024-07-15'),  -- Noah Scuses enrolls in Meta-Body Anatomy
 (4, 2, '2024-07-24');  -- Barry Mealive enrolls in Chemistry 101
 
--- BONUS: Ida Student enrolls in English And Its Derivatives
+-- BONUS: INSERT Ida Studen in English And Its Derivatives
 INSERT INTO enrollments (student_id, course_id, enrollment_date) VALUES
 (5, 4, '2024-09-01');
 
@@ -113,7 +116,7 @@ JOIN
 
 
 ----------------------------------------
--- ASSIGNED QUERIES                   --
+--    ASSIGNED QUERIES                --
 ----------------------------------------
 
 -- 1. Retrieve Full Names of Students Enrolled in "Chemistry 101"
@@ -155,7 +158,7 @@ JOIN
 
 
 ----------------------------------------
--- Updating Data                      --
+--    Updating Data                   --
 ----------------------------------------
 
 -- 1. Identify the Student by id
@@ -177,7 +180,7 @@ WHERE id = 2;
 SELECT * FROM students WHERE id = 2;
 
 ----------------------------------------
---  Deleting Data                     --
+--    Deleting Data                   --
 ----------------------------------------
 
 -- 1. Identify the Enrollment Record
