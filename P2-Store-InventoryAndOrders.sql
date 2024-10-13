@@ -74,7 +74,6 @@ INSERT INTO orders (customer_id, order_date) VALUES
 (4, '2024-10-10'), -- Order 4 by Penny Pinscher
 (1, '2024-10-09'); -- Order 5 by Cash Money
 
-----------------------------------------
 
 -- INSERT data into the ORDER_ITEMS table --
 
@@ -102,3 +101,143 @@ INSERT INTO order_items (order_id, product_id, quantity) VALUES
 INSERT INTO order_items (order_id, product_id, quantity) VALUES
 (5, 4, 2), -- Fat-Free Lard x2
 (5, 5, 1); -- Live Teddy Bear x1
+
+----------------------------------------
+--    ASSIGNED QUERIES                --
+----------------------------------------
+
+-- 1. Retrieve Names and Stock Quantities of All Products
+SELECT product_name, stock_quantity
+FROM products;
+
+-- 2. Retrieve Product Names and Quantities for a Specific Order
+SELECT
+    p.product_name,
+    oi.quantity
+FROM
+    order_items oi
+JOIN
+    products p ON oi.product_id = p.id
+WHERE
+    oi.order_id = 1;
+
+-- 3. Retrieve All Orders Placed by a Specific Customer
+SELECT
+    o.id AS order_id,
+    o.order_date,
+    p.product_name,
+    oi.quantity
+FROM
+    orders o
+JOIN
+    customers c ON o.customer_id = c.id
+JOIN
+    order_items oi ON o.id = oi.order_id
+JOIN
+    products p ON oi.product_id = p.id
+WHERE
+    c.email = 'CashMoney@doshmail.com'
+ORDER BY
+    o.order_date DESC,
+    o.id,
+    p.product_name;
+
+
+----------------------------------------
+--    Updating Data                   --
+----------------------------------------
+
+-- 1. Retrieve Products and Quantities from Order 1
+SELECT
+    oi.product_id,
+    p.product_name,
+    oi.quantity,
+    p.stock_quantity
+FROM
+    order_items oi
+JOIN
+    products p ON oi.product_id = p.id
+WHERE
+    oi.order_id = 1;
+
+-- 2. Update stock quantities based on Order 1
+
+-- Update Wireless Extension Cord (Product ID 1)
+UPDATE products
+SET stock_quantity = stock_quantity - 2
+WHERE id = 1;
+
+-- Update HotDog Water(12pk) (Product ID 3)
+UPDATE products
+SET stock_quantity = stock_quantity - 1
+WHERE id = 3;
+
+-- POTENTIAL ALT-METHOD? --
+-- Single Query Update --
+-- Updates stock quantities dynamically
+-- UPDATE products p
+-- SET stock_quantity = p.stock_quantity - oi.quantity
+-- FROM order_items oi
+-- WHERE p.id = oi.product_id
+--   AND oi.order_id = 1;
+
+-- 3. Verify the Updates
+SELECT id, product_name, stock_quantity
+FROM products
+WHERE id IN (1, 3);
+
+
+----------------------------------------
+--    Deleting Data                   --
+----------------------------------------
+
+-- 1. Verify the Order and items
+SELECT
+    o.id AS order_id,
+    o.order_date,
+    c.first_name || ' ' || c.last_name AS customer_name,
+    p.product_name,
+    oi.quantity
+FROM
+    orders o
+JOIN
+    customers c ON o.customer_id = c.id
+JOIN
+    order_items oi ON o.id = oi.order_id
+JOIN
+    products p ON oi.product_id = p.id
+WHERE
+    o.id = 3;
+
+-- 2. Delete Order Items for Order ID 3
+DELETE FROM order_items
+WHERE order_id = 3;
+
+-- 3. Delete Order with ID 3
+DELETE FROM orders
+WHERE id = 3;
+
+-- 4. Verify the Deletion
+SELECT
+    o.id AS order_id,
+    o.order_date,
+    c.first_name || ' ' || c.last_name AS customer_name,
+    p.product_name,
+    oi.quantity
+FROM
+    orders o
+JOIN
+    customers c ON o.customer_id = c.id
+JOIN
+    order_items oi ON o.id = oi.order_id
+JOIN
+    products p ON oi.product_id = p.id
+WHERE
+    o.id = 3;
+
+-- Verify no order items exist for Order ID 3
+SELECT *
+FROM order_items
+WHERE order_id = 3;
+
+
